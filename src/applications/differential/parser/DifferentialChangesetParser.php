@@ -1261,7 +1261,7 @@ final class DifferentialChangesetParser extends Phobject {
     for ($ii = $range_end; $ii >= $range_start; $ii--) {
       // We need to expand tabs to process mixed indenting and to round
       // correctly later.
-      $line = str_replace("\t", '  ', $this->new[$ii]['text']);
+      $line = str_replace("\t", '        ', $this->new[$ii]['text']);
       $trimmed = ltrim($line);
       if ($trimmed != '') {
         // We round down to flatten "/**" and " *".
