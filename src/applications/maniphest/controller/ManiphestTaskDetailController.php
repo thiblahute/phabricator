@@ -354,13 +354,12 @@ final class ManiphestTaskDetailController extends ManiphestController {
     }
 
     $edge_types = array(
-      ManiphestTaskHasRevisionEdgeType::EDGECONST
-        => pht('Differential Revisions'),
       ManiphestTaskHasMockEdgeType::EDGECONST
         => pht('Pholio Mocks'),
     );
 
     $revisions_commits = array();
+    $revisions_diffs = array();
 
     $commit_phids = array_keys(
       $edges[ManiphestTaskHasCommitEdgeType::EDGECONST]);
@@ -387,6 +386,72 @@ final class ManiphestTaskDetailController extends ManiphestController {
       }
     }
 
+    $diff_revision_phids = array_keys(
+      $edges[ManiphestTaskHasRevisionEdgeType::EDGECONST]);
+    if ($diff_revision_phids) {
+      $diff_revisions = id(new DifferentialRevisionQuery())
+        ->setViewer($viewer)
+        ->setOrder(DifferentialRevisionQuery::ORDER_CREATED)
+        ->withPHIDs($diff_revision_phids)
+        ->execute();
+      foreach (array_reverse($diff_revisions) as $revision) {
+        $phid = $handles[$revision->getPHID()];
+
+        $classes = array();
+        $classes[] = 'phui-handle';
+
+        $title = $phid->getFullName();
+        $icon_font = null;
+
+        $status = $revision->getStatus();
+
+        switch ($status) {
+          case ArcanistDifferentialRevisionStatus::IN_PREPARATION:
+            $icon_font = 'fa-question-circle';
+            $icon_color = 'bluegrey';
+            break;
+          case ArcanistDifferentialRevisionStatus::NEEDS_REVIEW:
+            $icon_font = 'fa-circle';
+            $icon_color = 'grey';
+            break;
+          case ArcanistDifferentialRevisionStatus::NEEDS_REVISION:
+          case ArcanistDifferentialRevisionStatus::CHANGES_PLANNED:
+            $icon_font = 'fa-times-circle';
+            $icon_color = 'red';
+            break;
+          case ArcanistDifferentialRevisionStatus::ACCEPTED:
+            $icon_font = 'fa-check-circle';
+            $icon_color = 'green';
+            break;
+          case ArcanistDifferentialRevisionStatus::ABANDONED:
+	    $icon_font = 'fa-plane';
+	    $icon_color = 'grey';
+	    break;
+          case ArcanistDifferentialRevisionStatus::CLOSED:
+	    $icon_font = 'fa-check-circle';
+	    $icon_color = 'grey';
+	    break;
+        }
+
+        if ($phid->getPolicyFiltered()) {
+          $icon_font = 'fa-lock';
+          $icon_color = 'lightgreytext';
+        }
+
+        $icon = id(new PHUIIconView())
+          ->setIcon($icon_font, $icon_color);
+
+        $revisions_diffs[$revision->getPHID()] = phutil_tag(
+          'a',
+          array(
+            'href' => $phid->getURI(),
+            'class' => implode(' ', $classes),
+            'title' => $title,
+          ),
+          array($icon, $title));
+      }
+    }
+
     foreach ($edge_types as $edge_type => $edge_name) {
       if ($edges[$edge_type]) {
         $edge_handles = $viewer->loadHandles(array_keys($edges[$edge_type]));
@@ -400,6 +465,12 @@ final class ManiphestTaskDetailController extends ManiphestController {
       $view->addProperty(
         pht('Commits'),
         phutil_implode_html(phutil_tag('br'), $revisions_commits));
+    }
+
+    if ($revisions_diffs) {
+      $view->addProperty(
+        pht('Differential Revisions'),
+        phutil_implode_html(phutil_tag('br'), $revisions_diffs));
     }
 
     $field_list->appendFieldsToPropertyList(
