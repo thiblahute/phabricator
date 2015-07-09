@@ -2997,6 +2997,19 @@ abstract class PhabricatorApplicationTransactionEditor
   /**
    * @task feed
    */
+  protected function getFeedStoryTime(array $xactions) {
+
+    $xactions = msort($xactions, 'getActionStrength');
+    $xactions = array_reverse($xactions);
+
+    $date = head(nonempty(mpull($xactions, 'getDateCreated')));
+    return $date;
+  }
+
+
+  /**
+   * @task feed
+   */
   protected function publishFeedStory(
     PhabricatorLiskDAO $object,
     array $xactions,
@@ -3013,11 +3026,12 @@ abstract class PhabricatorApplicationTransactionEditor
 
     $story_type = $this->getFeedStoryType();
     $story_data = $this->getFeedStoryData($object, $xactions);
+    $story_time = $this->getFeedStoryTime($xactions);
 
     id(new PhabricatorFeedStoryPublisher())
       ->setStoryType($story_type)
       ->setStoryData($story_data)
-      ->setStoryTime(time())
+      ->setStoryTime($story_time)
       ->setStoryAuthorPHID($this->getActingAsPHID())
       ->setRelatedPHIDs($related_phids)
       ->setPrimaryObjectPHID($object->getPHID())
