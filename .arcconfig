@@ -1,5 +1,6 @@
 {
-  "phabricator.uri": "https://secure.phabricator.com/",
-  "load": ["src/"],
-  "history.immutable": false
+  "phabricator.uri": "https://phabricator.collabora.co.uk/",
+  "repository.callsign": "PHAB",
+  "projects": "phabricator",
+  "load": ["src/"]
 }
