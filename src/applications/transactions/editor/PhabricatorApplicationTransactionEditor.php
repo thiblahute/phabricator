@@ -1613,8 +1613,10 @@ abstract class PhabricatorApplicationTransactionEditor
 
     if ($mentionable_phids) {
       $edge_type = PhabricatorObjectMentionsObjectEdgeType::EDGECONST;
+      $date = head($xactions)->getDateCreated();
       $block_xactions[] = newv(get_class(head($xactions)), array())
         ->setIgnoreOnNoEffect(true)
+        ->setDateCreated($date)
         ->setTransactionType(PhabricatorTransactions::TYPE_EDGE)
         ->setMetadataValue('edge:type', $edge_type)
         ->setNewValue(array('+' => $mentionable_phids));
@@ -3300,6 +3302,7 @@ abstract class PhabricatorApplicationTransactionEditor
       $template
         ->setTransactionType($xaction->getTransactionType())
         ->setMetadataValue('edge:type', $inverse_type)
+        ->setDateCreated($xaction->getDateCreated())
         ->setNewValue(
           array(
             $edge_edit_type => array($object->getPHID() => $object->getPHID()),
