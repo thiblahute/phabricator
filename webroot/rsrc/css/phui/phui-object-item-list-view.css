@@ -439,6 +439,36 @@ ul.phui-object-item-icons {
   border-left-color: {$darkgreytext};
 }
 
+/* - CCU local -----------------------------------------------------------------
+
+  Colour scheme for Collabora installation. If this sticks out like a sore
+  thumb, it's because it should.
+
+*/
+
+.phui-object-item-bar-color-ccu-very-red {
+  border-left-color: #f1433f;
+}
+
+.phui-object-item-bar-color-ccu-a-bit-red {
+  border-left-color: #fbcc5c;
+}
+
+.phui-object-item-bar-color-ccu-washed-out-yellow {
+  border-left-color: #f7e967;
+}
+
+.phui-object-item-bar-color-ccu-pleasingly-neutral-green {
+  border-left-color: #a9cf54;
+}
+
+.phui-object-item-bar-color-ccu-washed-out-blue-with-hints-of-teal {
+  border-left-color: #70b7ba;
+}
+
+.phui-object-item-bar-color-ccu-very-deep-grey-blue-with-more-hints-of-teal {
+  border-left-color: #3d4c53;
+}
 
 /* - Disabled ------------------------------------------------------------------
 

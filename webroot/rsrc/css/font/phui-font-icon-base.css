@@ -151,6 +151,25 @@
   color: rgba({$alphagrey},0.3);
 }
 
+.phui-icon-view.ccu-very-red {
+  color: #f1433f;
+}
+.phui-icon-view.ccu-a-bit-red {
+  color: #fbcc5c;
+}
+.phui-icon-view.ccu-washed-out-yellow {
+  color: #f7e967;
+}
+.phui-icon-view.ccu-pleasingly-neutral-green {
+  color: #a9cf54;
+}
+.phui-icon-view.ccu-washed-out-blue-with-hints-of-teal {
+  color: #70b7ba;
+}
+.phui-icon-view.ccu-very-deep-grey-blue-with-more-hints-of-teal {
+  color: #3d4c53;
+}
+
 /* Hovers */
 
 .device-desktop a.phui-icon-view.lightgreytext:hover,
