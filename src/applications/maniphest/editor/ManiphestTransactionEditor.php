@@ -279,6 +279,7 @@ final class ManiphestTransactionEditor
             ->setContentSource($this->getContentSource())
             ->setContinueOnNoEffect(true)
             ->setContinueOnMissingFields(true)
+            ->setDisableEmail($this->getDisableEmail())
             ->applyTransactions($blocked_task, array($parent_xaction));
         }
       }
