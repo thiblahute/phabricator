@@ -262,12 +262,14 @@ final class ManiphestTransactionEditor
 
         $old = $unblock_xaction->getOldValue();
         $new = $unblock_xaction->getNewValue();
+        $date = $unblock_xaction->getDateCreated();
 
         foreach ($blocked_tasks as $blocked_task) {
           $parent_xaction = id(new ManiphestTransaction())
             ->setTransactionType(ManiphestTransaction::TYPE_UNBLOCK)
             ->setOldValue(array($object->getPHID() => $old))
-            ->setNewValue(array($object->getPHID() => $new));
+            ->setNewValue(array($object->getPHID() => $new))
+            ->setDateCreated($date);
 
           if ($this->getIsNewObject()) {
             $parent_xaction->setMetadataValue('blocker.new', true);
