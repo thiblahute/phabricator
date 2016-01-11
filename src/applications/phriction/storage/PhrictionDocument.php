@@ -80,9 +80,16 @@ final class PhrictionDocument extends PhrictionDAO
       $document->setViewPolicy($parent_doc->getViewPolicy());
       $document->setEditPolicy($parent_doc->getEditPolicy());
     } else {
-      $default_view_policy = PhabricatorPolicies::getMostOpenPolicy();
+      $app = id(new PhabricatorApplicationQuery())
+        ->setViewer($actor)
+        ->withClasses(array('PhabricatorPhrictionApplication'))
+        ->executeOne();
+      $default_view_policy = $app->getPolicy(
+        PhrictionDefaultViewCapability::CAPABILITY);
+      $default_edit_policy = $app->getPolicy(
+        PhrictionDefaultEditCapability::CAPABILITY);
       $document->setViewPolicy($default_view_policy);
-      $document->setEditPolicy(PhabricatorPolicies::POLICY_USER);
+      $document->setEditPolicy($default_edit_policy);
     }
 
     return $document;

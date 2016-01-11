@@ -69,6 +69,21 @@ final class PhabricatorPhrictionApplication extends PhabricatorApplication {
     return 0.140;
   }
 
+  protected function getCustomCapabilities() {
+    return array(
+      PhrictionDefaultViewCapability::CAPABILITY => array(
+        'caption' => pht('Default view policy for newly created root pages.'),
+        'template' => PhrictionDocumentPHIDType::TYPECONST,
+        'capability' => PhabricatorPolicyCapability::CAN_VIEW,
+      ),
+      PhrictionDefaultEditCapability::CAPABILITY => array(
+        'caption' => pht('Default edit policy for newly created root pages.'),
+        'template' => PhrictionDocumentPHIDType::TYPECONST,
+        'capability' => PhabricatorPolicyCapability::CAN_EDIT,
+      ),
+    );
+  }
+
   public function getApplicationSearchDocumentTypes() {
     return array(
       PhrictionDocumentPHIDType::TYPECONST,

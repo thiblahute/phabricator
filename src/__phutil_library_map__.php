@@ -4177,6 +4177,8 @@ phutil_register_library_map(array(
     'PhrictionController' => 'applications/phriction/controller/PhrictionController.php',
     'PhrictionCreateConduitAPIMethod' => 'applications/phriction/conduit/PhrictionCreateConduitAPIMethod.php',
     'PhrictionDAO' => 'applications/phriction/storage/PhrictionDAO.php',
+    'PhrictionDefaultEditCapability' => 'applications/phriction/capability/PhrictionDefaultEditCapability.php',
+    'PhrictionDefaultViewCapability' => 'applications/phriction/capability/PhrictionDefaultViewCapability.php',
     'PhrictionDeleteController' => 'applications/phriction/controller/PhrictionDeleteController.php',
     'PhrictionDiffController' => 'applications/phriction/controller/PhrictionDiffController.php',
     'PhrictionDocument' => 'applications/phriction/storage/PhrictionDocument.php',
@@ -9308,6 +9310,8 @@ phutil_register_library_map(array(
     'PhrictionController' => 'PhabricatorController',
     'PhrictionCreateConduitAPIMethod' => 'PhrictionConduitAPIMethod',
     'PhrictionDAO' => 'PhabricatorLiskDAO',
+    'PhrictionDefaultEditCapability' => 'PhabricatorPolicyCapability',
+    'PhrictionDefaultViewCapability' => 'PhabricatorPolicyCapability',
     'PhrictionDeleteController' => 'PhrictionController',
     'PhrictionDiffController' => 'PhrictionController',
     'PhrictionDocument' => array(
