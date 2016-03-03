@@ -45,9 +45,9 @@ final class DifferentialNextStepField
       case PhabricatorRepositoryType::REPOSITORY_TYPE_GIT:
         $branch = $diff->getBranch();
         if (strlen($branch)) {
-          $next_step = csprintf('arc land %R', $branch);
+          $next_step = csprintf('git phab land %R', $branch);
         } else {
-          $next_step = csprintf('arc land');
+          $next_step = csprintf('git phab land');
         }
         break;
       case PhabricatorRepositoryType::REPOSITORY_TYPE_SVN:

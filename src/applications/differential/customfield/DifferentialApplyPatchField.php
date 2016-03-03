@@ -26,7 +26,7 @@ final class DifferentialApplyPatchField
   public function renderPropertyViewValue(array $handles) {
     $mono = $this->getObject()->getMonogram();
 
-    return phutil_tag('tt', array(), "arc patch {$mono}");
+    return phutil_tag('tt', array(), "git phab fetch {$mono}");
   }
 
 }
