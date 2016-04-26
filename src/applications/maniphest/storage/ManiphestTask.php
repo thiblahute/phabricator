@@ -41,6 +41,8 @@ final class ManiphestTask extends ManiphestDAO
   protected $properties = array();
   protected $points;
 
+  private $revisions = null;
+
   private $subscriberPHIDs = self::ATTACHABLE;
   private $groupByProjectPHID = self::ATTACHABLE;
   private $customFields = self::ATTACHABLE;
@@ -138,6 +140,27 @@ final class ManiphestTask extends ManiphestDAO
     return PhabricatorEdgeQuery::loadDestinationPHIDs(
       $this->getPHID(),
       ManiphestTaskDependedOnByTaskEdgeType::EDGECONST);
+  }
+
+  public function loadRevisions(PhabricatorUser $viewer) {
+    if ($this->revisions) {
+      return;
+    }
+
+    $phids = PhabricatorEdgeQuery::loadDestinationPHIDs(
+      $this->getPHID(),
+      ManiphestTaskHasRevisionEdgeType::EDGECONST);
+
+    if (count($phids) == 0) {
+      $this->revisions = array();
+      return;
+    }
+
+    $this->revisions = id(new DifferentialRevisionQuery())
+      ->setViewer($viewer)
+      ->setOrder(DifferentialRevisionQuery::ORDER_CREATED)
+      ->withPHIDs($phids)
+      ->execute();
   }
 
   public function generatePHID() {
@@ -273,6 +296,77 @@ final class ManiphestTask extends ManiphestDAO
     );
   }
 
+  public function getReviewIcon(PhabricatorUser $viewer) {
+    // Determine an overall review/CI status for the task, pessimising heavily
+    // as we do so. Discount abandoned reviews as irrelevant, then proceed
+    // in the following order: needs revision, changes planned, needs review,
+    // in preparation, accepted, closed.
+    $priorities = array(
+      ArcanistDifferentialRevisionStatus::NEEDS_REVISION => 5,
+      ArcanistDifferentialRevisionStatus::CHANGES_PLANNED => 4,
+      ArcanistDifferentialRevisionStatus::NEEDS_REVIEW => 3,
+      ArcanistDifferentialRevisionStatus::IN_PREPARATION => 2,
+      ArcanistDifferentialRevisionStatus::ACCEPTED => 1,
+      ArcanistDifferentialRevisionStatus::CLOSED => 0,
+      ArcanistDifferentialRevisionStatus::ABANDONED => -1,
+    );
+    $ci_diff_map = array(
+      HarbormasterBuildable::STATUS_BUILDING =>
+        ArcanistDifferentialRevisionStatus::IN_PREPARATION,
+      HarbormasterBuildable::STATUS_PASSED =>
+        ArcanistDifferentialRevisionStatus::ACCEPTED,
+      HarbormasterBuildable::STATUS_FAILED =>
+        ArcanistDifferentialRevisionStatus::NEEDS_REVISION,
+    );
+    $status = ArcanistDifferentialRevisionStatus::ABANDONED;
+
+    $this->loadRevisions($viewer);
+
+    if (count($this->revisions) == 0) {
+      return null;
+    }
+
+    foreach ($this->revisions as $revision) {
+      $rev_status = $revision->getStatus();
+
+      $diff = $revision->loadActiveDiff();
+      if ($diff) {
+        $buildables = id(new HarbormasterBuildableQuery())
+          ->setViewer($viewer)
+          ->withBuildablePHIDs(array($diff->getPHID()))
+          ->withManualBuildables(true)
+          ->needBuilds(true)
+          ->needTargets(true)
+          ->execute();
+
+        foreach ($buildables as $buildable) {
+          $ci_status = $ci_diff_map[$buildable->getStatus()];
+          if ($ci_status > $rev_status) {
+            $rev_status = $ci_status;
+          }
+        }
+      }
+
+      if ($priorities[$rev_status] >
+          $priorities[$status]) {
+        $status = $rev_status;
+      }
+    }
+
+    switch ($status) {
+    case ArcanistDifferentialRevisionStatus::ABANDONED:
+      return null;
+    case ArcanistDifferentialRevisionStatus::NEEDS_REVISION:
+    case ArcanistDifferentialRevisionStatus::CHANGES_PLANNED:
+      return 'fa-frown-o red';
+    case ArcanistDifferentialRevisionStatus::NEEDS_REVIEW:
+    case ArcanistDifferentialRevisionStatus::IN_PREPARATION:
+      return 'fa-meh-o darkgrey';
+    case ArcanistDifferentialRevisionStatus::ACCEPTED:
+    case ArcanistDifferentialRevisionStatus::CLOSED:
+      return 'fa-smile-o green';
+    }
+  }
 
 /* -(  PhabricatorSubscribableInterface  )----------------------------------- */
 

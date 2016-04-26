@@ -117,6 +117,15 @@ final class ProjectBoardTaskCard extends Phobject {
     }
     $card->setStatusIcon($status_icon.' '.$status_color);
 
+    $review_status = $task->getReviewIcon($viewer);
+    if ($review_status) {
+      $review_tag = id(new PHUITagView())
+        ->setType(PHUITagView::TYPE_OBJECT)
+        ->setBackgroundColor(null)
+        ->setIcon($review_status);
+      $card->addAttribute($review_tag);
+    }
+
     $project_handles = $this->getProjectHandles();
 
     // Remove any archived projects from the list.
