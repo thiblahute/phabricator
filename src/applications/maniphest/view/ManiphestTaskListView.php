@@ -94,6 +94,28 @@ final class ManiphestTaskListView extends ManiphestView {
         $item->addSigil('maniphest-task');
       }
 
+      $review_status = $task->getReviewIcon($this->getUser());
+      if ($review_status !== null) {
+        $item->addAttribute(
+          id(new PHUITagView())
+	    ->setType(PHUITagView::TYPE_OBJECT)
+	    ->setBackgroundColor(null)
+	    ->setIcon($review_status));
+      }
+
+      if (ManiphestTaskPoints::getIsEnabled()) {
+        $points = $task->getPoints();
+	if ($points !== null) {
+	  $item->addAttribute(
+	    id(new PHUITagView())
+	      ->setType(PHUITagView::TYPE_SHADE)
+	      ->setShade(PHUITagView::COLOR_GREY)
+	      ->setSlimShady(true)
+	      ->setName($points)
+	      ->addClass('phui-workcard-points'));
+	}
+      }
+
       $project_handles = array_select_keys(
         $handles,
         array_reverse($task->getProjectPHIDs()));
