@@ -68,6 +68,14 @@ abstract class DifferentialConduitAPIMethod extends ConduitAPIMethod {
       ->setTransactionType(DifferentialTransaction::TYPE_UPDATE)
       ->setNewValue($diff->getPHID());
 
+    // Remove parent dependency so we can create a clean new stack
+    // from the user commit message.
+    $xactions[] = id(new DifferentialTransaction())
+                ->setTransactionType(PhabricatorTransactions::TYPE_EDGE)
+                ->setMetadataValue('edge:type',
+                    DifferentialRevisionDependsOnRevisionEdgeType::EDGECONST)
+                ->setNewValue(array('=' => array()));
+
     $values = $request->getValue('fields', array());
     foreach ($values as $key => $value) {
       $field = idx($field_map, $key);
