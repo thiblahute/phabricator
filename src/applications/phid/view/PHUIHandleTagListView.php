@@ -61,6 +61,11 @@ final class PHUIHandleTagListView extends AphrontTagView {
       }
     }
 
+    if (!is_array($handles)) {
+      $handles = iterator_to_array($handles);
+    }
+    $handles = msort($handles, 'getName');
+
     if ($this->limit && (count($handles) > $this->limit)) {
       if (!is_array($handles)) {
         $handles = iterator_to_array($handles);
